@@ -2,8 +2,8 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const dotenv = require('dotenv');
 const s3 = new AWS.S3({
-	    accessKeyId: "AKIAILZVII6JRV5JUU3A", //required
-	    secretAccessKey: "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" //required
+	    accessKeyId: process.env.AWS_ACCESS_KEY, //required
+	    secretAccessKey: process.env.AWS_SECRET_KEY //required
        });
        
 dotenv.config();
