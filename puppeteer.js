@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const randomstring = require('randomstring');
 
 
@@ -13,7 +13,7 @@ module.exports.screenshot =  (body) =>{
     return new Promise(async (resolve, reject) => {
         try{
             // console.log("browser open");
-            let browser = await puppeteer.launch();
+            let browser = await puppeteer.launch({executablePath: process.env.EXECUTABLE_PATH});
             let page = await browser.newPage();
             const override = Object.assign(page.viewport(), {width: width});
             if(isAuthenticated){
