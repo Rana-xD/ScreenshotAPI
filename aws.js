@@ -31,9 +31,10 @@ module.exports.uploadImage = (file) => {
 	                            if (err) {
 									console.log(err);
 									reject(err);
-                                }
+								}
+								resolve(data.Location);
 	                        });
-	                        resolve(data.Location);
+	                        
 	                    }
 	                });
 	            });
