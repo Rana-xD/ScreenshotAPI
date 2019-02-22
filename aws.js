@@ -9,14 +9,14 @@ const s3 = new AWS.S3({
 dotenv.config();
 
 
-module.exports.uploadImage = (file) => {
+module.exports.uploadImage = (file,path) => {
 	    return new Promise((resolve,reject)=>{
 	        fs.readFile(file, function (err, data) {
 	            if (err) throw err; // Something went wrong!
 	                var fileName = file.substring(5);
 	                var params = {
 	                    Bucket:process.env.BUCKET,
-	                    Key: "diff/"+ fileName, //file.name doesn't exist as a property
+	                    Key: path + fileName, //file.name doesn't exist as a property
 	                    Body: data,
                         ACL: 'public-read',
                         ContentType: 'image/png'

@@ -6,8 +6,8 @@ module.exports.screenshot =  (body) =>{
     let url = body.url;
     let width = body.width;
     let isAuthenticated = body.authentication ? true : false;
-    let fileName = `${randomstring.generate({charset: 'hex'})}.png`;
-    let path = body.path;
+    let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
+    
 
 
     return new Promise(async (resolve, reject) => {

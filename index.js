@@ -9,7 +9,7 @@ var hrstart = process.hrtime();
 
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minutes
-    max: 50 // limit each IP to 20 requests per windowMs
+    max: 50 // limit each IP to 50 requests per windowMs
   });
 
 /**bodyParser.json(options)
@@ -31,9 +31,12 @@ app.get('/screenshot',(req,res)=>{
 
 app.post('/screenshot', async (req,res)=>{
     try{
+    let path = req.body.path;
     let fileName = await puppeteer.screenshot(req.body);
-    let location = await aws.uploadImage(fileName);
+    let location = await aws.uploadImage(fileName,path);
     res.status(200).send({
+        url: req.body.url,
+        witdh: req.body.width,
         location: location
     })
     }
