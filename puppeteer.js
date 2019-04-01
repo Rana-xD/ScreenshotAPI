@@ -46,10 +46,10 @@ module.exports.screenshot =  (body) =>{
 				await page.click(`${passClassname}`);
 				await page.keyboard.type(loginPassword);
 				await page.click(`${loginBtn}`);
-				await page.waitForNavigation({
-					waitUntil: 'load',
-					timeout: 0
-				});
+				// await page.waitForNavigation({
+				// 	waitUntil: 'load',
+				// 	timeout: 0
+				// });
 				
 				// Wait for page to loaded completely
 				// await page.waitForFunction("document.readyState == 'completed'", {
