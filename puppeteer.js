@@ -47,6 +47,7 @@ module.exports.screenshot =  (body) =>{
 				await page.keyboard.type(loginPassword);
 				await page.click(`${loginBtn}`);
 				await page.waitForNavigation({
+					waitUntil: 'load',
 					timeout: 0
 				});
 				
@@ -60,7 +61,6 @@ module.exports.screenshot =  (body) =>{
 				waitUntil: 'load',
 				timeout: 0
 			});
-			await page.waitForNavigation({waitUntil: 'networkidle2'});
 			await page.evaluate(_ => {
 				while (document.body.scrollHeight < (window.scrollY + window.innerHeight)) {
 				  window.scrollBy(0, window.innerHeight);
