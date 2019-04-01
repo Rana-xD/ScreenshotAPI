@@ -30,20 +30,19 @@ app.get('/screenshot',(req,res)=>{
 });
 
 app.post('/screenshot', async (req,res)=>{
-    try{
-    let path = req.body.path;
-    let fileName = await puppeteer.screenshot(req.body);
-    let location = await aws.uploadImage(fileName,path);
-    res.status(200).send({
-        url: req.body.url,
-        witdh: req.body.width,
-        location: location
-    })
-    }
-    catch(err){
-        res.status(400).send({
-            message: err
-        })
-    }
+   try{
+		let path = req.body.path;
+		let fileName = await puppeteer.screenshot(req.body);
+		let location = await aws.uploadImage(fileName,path);
+		res.status(200).send({
+			url: req.body.url,
+			witdh: req.body.width,
+			location: location
+		});
+   } catch(err) {
+		res.status(400).send({
+			message: err.message
+		});
+	}
 });
 
