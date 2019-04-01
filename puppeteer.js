@@ -30,12 +30,12 @@ module.exports.screenshot =  (body) =>{
 			
 			// Bypass login form
 			if(hasLoginPage) {
-				let loginPageUrl = body.login_bypass.login_page_url,
-					loginId = body.login_bypass.login_id_value,
+				let loginPageUrl = body.login_bypass.login_page_url.trim(),
+					loginId = body.login_bypass.login_id_value.trim(),
 					loginPassword = body.login_bypass.login_pass_value,
-					idClassname = body.login_bypass.login_id_classname,
-					passClassname = body.login_bypass.login_pass_classname,
-					loginBtn = body.login_bypass.login_btn_classname;
+					idClassname = body.login_bypass.login_id_classname.trim().replace(/\s\s+/g, ' '),
+					passClassname = body.login_bypass.login_pass_classname.trim().replace(/\s\s+/g, ' '),
+					loginBtn = body.login_bypass.login_btn_classname.trim().replace(/\s\s+/g, ' ');
 
 				await page.goto(loginPageUrl, {
 					waitUntil: 'load',
@@ -46,10 +46,11 @@ module.exports.screenshot =  (body) =>{
 				await page.click(`${passClassname}`);
 				await page.keyboard.type(loginPassword);
 				await page.click(`${loginBtn}`);
-				// await page.waitForNavigation({
-				// 	waitUntil: 'load',
-				// 	timeout: 0
-				// });
+				await page.waitForNavigation({
+					waitUntil: 'domcontentloaded',
+					timeout: 0
+				});
+				
 				
 				// Wait for page to loaded completely
 				// await page.waitForFunction("document.readyState == 'completed'", {
