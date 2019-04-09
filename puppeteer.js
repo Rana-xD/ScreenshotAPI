@@ -47,7 +47,7 @@ module.exports.screenshot =  (body) =>{
 				await page.keyboard.type(loginPassword);
 				await page.click(`${loginBtn}`);
 				await page.waitForNavigation({
-					waitUntil: 'domcontentloaded',
+					waitUntil: 'load',
 					timeout: 0
 				});
 				
