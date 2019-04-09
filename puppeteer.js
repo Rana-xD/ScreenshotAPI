@@ -20,7 +20,7 @@ module.exports.screenshot =  (body) =>{
 			const override = Object.assign(page.viewport(), {
 				width: width
 			});
-
+			await page.setViewport(override);
 			if(isAuthenticated){
 				await page.authenticate({
 					username: body.authentication.username, 
