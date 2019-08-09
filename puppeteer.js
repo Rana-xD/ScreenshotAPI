@@ -75,14 +75,14 @@ module.exports.screenshot =  (body) =>{
 			// 	  window.scrollBy(0, window.innerHeight);
 			// 	}
 			// });
-			// await page.screenshot({
-			// 	path: `./${fileName}`,
-			// 	fullPage: true
-			// });
-			await page.screenshot({ 
-				path: `./${fileName}`, 
-				clip : { x: 0, y: 0, width:width, height, scale: 1 }
+			await page.screenshot({
+				path: `./${fileName}`,
+				fullPage: true
 			});
+			// await page.screenshot({ 
+			// 	path: `./${fileName}`, 
+			// 	clip : { x: 0, y: 0, width:width, height, scale: 1 }
+			// });
 			await page.close();
 			await browser.close();
 			resolve(fileName);
