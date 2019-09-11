@@ -99,7 +99,7 @@ function getHeight(width){
 	  resolve(600);
 	}
 	else{
-	  resolve(height = (width * 9) / 16);
+	  resolve(height = Math.round((width * 9) / 16));
 	}
 });
 }
