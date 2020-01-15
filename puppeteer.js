@@ -43,18 +43,20 @@ module.exports.screenshot = (body) => {
 					loginBtn = body.login_bypass.login_btn_classname.trim().replace(/\s\s+/g, ' ');
 
 				await page.goto(loginPageUrl, {
-					waitUntil: 'load',
 					timeout: 0
 				});
-				await page.click(`${idClassname}`);
+
+				await page.focus(idClassname);
 				await page.keyboard.type(loginId);
-				await page.click(`${passClassname}`);
+				await page.focus(passClassname);
 				await page.keyboard.type(loginPassword);
-				await page.click(`${loginBtn}`);
-				await page.waitForNavigation({
-					waitUntil: 'load',
-					timeout: 0
-				});
+
+				// Preventing the race conditions of the Promise execution
+				// Ref: https://github.com/puppeteer/puppeteer/issues/1412#issuecomment-345357063
+				await Promise.all([
+					page.waitForNavigation(),
+					page.click(loginBtn)
+				])
 
 
 				// Wait for page to loaded completely
@@ -64,9 +66,9 @@ module.exports.screenshot = (body) => {
 				// });
 			}
 			await page.goto(url, {
-				waitUntil: 'load',
 				timeout: 0
 			});
+
 			const height = await page.evaluate(_ => {
 				return document.body.scrollHeight;
 			});
