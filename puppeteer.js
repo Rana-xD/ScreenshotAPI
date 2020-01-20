@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const randomstring = require('randomstring');
 
 
@@ -7,7 +7,7 @@ module.exports.screenshot = (body) => {
 	let width = body.width;
 	let isAuthenticated = body.authentication ? true : false;
 	let hasLoginPage = body.login_bypass ? true : false;
-	let waitTime = body.wait_time || 0;
+	let waitTime = body.wait_time || 1;
 
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
 
@@ -15,17 +15,12 @@ module.exports.screenshot = (body) => {
 		try {
 			let defaultHeight = await getHeight(width);
 			let browser = await puppeteer.launch({
-				executablePath: process.env.EXECUTABLE_PATH,
 				defaultViewport: {
 					width: width,
 					height: defaultHeight
 				}
 			});
 			let page = await browser.newPage();
-			// const override = Object.assign(page.viewport(), {
-			// 	width: width
-			// });
-			// await page.setViewport(override);
 			if (isAuthenticated) {
 				await page.authenticate({
 					username: body.authentication.username,
@@ -58,25 +53,31 @@ module.exports.screenshot = (body) => {
 					page.click(loginBtn)
 				])
 
-
-				// Wait for page to loaded completely
-				// await page.waitForFunction("document.readyState == 'completed'", {
-				// 	polling: 100, // 0.1 second
-				// 	timeout: 0 // 1 minute
-				// });
 			}
 			await page.goto(url, {
 				timeout: 0
 			});
 
-			const height = await page.evaluate(_ => {
-				return document.body.scrollHeight;
-			});
-			// await page.evaluate(_ => {
-			// 	while (document.body.scrollHeight < (window.scrollY + window.innerHeight)) {
-			// 	  window.scrollBy(0, window.innerHeight);
-			// 	}
-			// });
+			const bodyHandle = await page.$('body');
+  			const { height } = await bodyHandle.boundingBox();
+  			await bodyHandle.dispose();
+
+  			// Scroll one viewport at a time, pausing to let content load
+  			const viewportHeight = page.viewport().height;
+  			let viewportIncr = 0;
+  			while (viewportIncr + viewportHeight < height) {
+    			await page.evaluate(_viewportHeight => {
+      			window.scrollBy(0, _viewportHeight);
+    			}, viewportHeight);
+				await wait(200);
+    			viewportIncr = viewportIncr + viewportHeight;
+  			}
+
+  			// Scroll back to top
+  				await page.evaluate(_ => {
+    			window.scrollTo(0, 0);
+  			});
+		
 
 			// Wait for a specific period before capture
 			await new Promise((resolve, reject) => {
@@ -87,10 +88,7 @@ module.exports.screenshot = (body) => {
 				path: `./${fileName}`,
 				fullPage: true
 			});
-			// await page.screenshot({ 
-			// 	path: `./${fileName}`, 
-			// 	clip : { x: 0, y: 0, width:width, height, scale: 1 }
-			// });
+
 			await page.close();
 			await browser.close();
 			resolve(fileName);
@@ -110,3 +108,6 @@ function getHeight(width) {
 		}
 	});
 }
+function wait (ms) {
+	return new Promise(resolve => setTimeout(() => resolve(), ms));
+  }
