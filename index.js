@@ -1,5 +1,6 @@
 const app = require('./app');
 const aws = require('./aws');
+const logger = require('./log')
 const puppeteer = require('./puppeteer');
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
@@ -40,6 +41,7 @@ app.post('/screenshot', async (req,res)=>{
 			location: location
 		});
    } catch(err) {
+	    logger.log.error(err);
 		res.status(400).send({
 			message: err.message
 		});

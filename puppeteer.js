@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const randomstring = require('randomstring');
-
+const logger = require('./log')
 
 module.exports.screenshot = (body) => {
 	let url = body.url;
@@ -10,7 +10,7 @@ module.exports.screenshot = (body) => {
 	let waitTime = body.wait_time || 1;
 
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
-
+	logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
 		try {
 			let defaultHeight = await getHeight(width);
@@ -93,7 +93,7 @@ module.exports.screenshot = (body) => {
 			await browser.close();
 			resolve(fileName);
 		} catch (e) {
-			console.log(e);
+			logger.log.error(e);
 			reject(e)
 		}
 	});

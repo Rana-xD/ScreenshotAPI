@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const dotenv = require('dotenv');
+const logger = require('./log')
 const s3 = new AWS.S3({
 	    accessKeyId: process.env.AWS_ACCESS_KEY, //required
 	    secretAccessKey: process.env.AWS_SECRET_KEY //required
@@ -24,14 +25,15 @@ module.exports.uploadImage = (file,path) => {
 				s3.upload(params, function (err, data) {
 					// Whether there is an error or not, delete the temp file
 					if (err) {
-						console.log('ERROR MSG: ', err);
+						logger.log.error(err);
 						reject(err);
 					} else {
 						fs.unlink(file, function (err) {
 						if (err) {
-							console.log(err);
+							logger.log.error(err);
 							reject(err);
 						}
+					logger.log.info(`Path: ${data.Location}`);
 					resolve(data.Location);
 				});
 						
