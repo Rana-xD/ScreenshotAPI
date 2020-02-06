@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const chromePuppeteer = require('puppeteer');
+const firefoxPuppeteer = require('puppeteer-firefox');
 const randomstring = require('randomstring');
 const logger = require('./log')
 
@@ -8,7 +9,7 @@ module.exports.screenshot = (body) => {
 	let isAuthenticated = body.authentication ? true : false;
 	let hasLoginPage = body.login_bypass ? true : false;
 	let waitTime = body.wait_time || 1;
-
+	let puppeteer = (isAuthenticated || hasLoginPage) ? chromePuppeteer : firefoxPuppeteer;
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
 	logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
@@ -38,7 +39,8 @@ module.exports.screenshot = (body) => {
 					loginBtn = body.login_bypass.login_btn_classname.trim().replace(/\s\s+/g, ' ');
 
 				await page.goto(loginPageUrl, {
-					timeout: 0
+					timeout: 0,
+					networkidle2
 				});
 
 				await page.focus(idClassname);
@@ -69,7 +71,7 @@ module.exports.screenshot = (body) => {
     			await page.evaluate(_viewportHeight => {
       			window.scrollBy(0, _viewportHeight);
     			}, viewportHeight);
-				await wait(200);
+				await wait(1000);
     			viewportIncr = viewportIncr + viewportHeight;
   			}
 
