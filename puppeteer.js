@@ -1,32 +1,33 @@
-const chromePuppeteer = require('puppeteer');
-const firefoxPuppeteer = require('puppeteer-firefox');
+const puppeteer = require('puppeteer-firefox');
 const randomstring = require('randomstring');
 // const logger = require('./log')
 
 module.exports.screenshot = (body) => {
 	let url = body.url;
-	let width = body.width;
+	let viewportWidth = body.width;
+	let viewportHeight = body.height || getHeight(viewportWidth);
 	let isAuthenticated = body.authentication ? true : false;
 	let hasLoginPage = body.login_bypass ? true : false;
 	let waitTime = body.wait_time || 1;
-	let puppeteer = (isAuthenticated || hasLoginPage) ? chromePuppeteer : firefoxPuppeteer;
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
 	// logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
 		try {
-			let defaultHeight = await getHeight(width);
 			let browser = await puppeteer.launch({
 				defaultViewport: {
-					width: width,
-					height: defaultHeight
+					width: viewportWidth,
+					height: viewportHeight
 				}
 			});
 			let page = await browser.newPage();
 			if (isAuthenticated) {
-				await page.authenticate({
-					username: body.authentication.username,
-					password: body.authentication.password
-				});
+				// Firefox specific for Basic Authentication
+				// Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
+				const encodedCredential = Buffer.from(`${body.authentication.username}:${body.authentication.password}`)
+																				.toString('base64');
+				await page.setExtraHTTPHeaders({
+					Authorization: `Basic ${encodedCredential}`
+				})
 			}
 
 			// Bypass login form
@@ -39,8 +40,7 @@ module.exports.screenshot = (body) => {
 					loginBtn = body.login_bypass.login_btn_classname.trim().replace(/\s\s+/g, ' ');
 
 				await page.goto(loginPageUrl, {
-					timeout: 0,
-					networkidle2
+					timeout: 0
 				});
 
 				await page.focus(idClassname);
@@ -61,29 +61,27 @@ module.exports.screenshot = (body) => {
 			});
 
 			const bodyHandle = await page.$('body');
-  			const { height } = await bodyHandle.boundingBox();
-  			await bodyHandle.dispose();
+			const { width, height } = await bodyHandle.boundingBox();
 
-  			// Scroll one viewport at a time, pausing to let content load
-  			const viewportHeight = page.viewport().height;
-  			let viewportIncr = 0;
-  			while (viewportIncr + viewportHeight < height) {
-    			await page.evaluate(_viewportHeight => {
-      			window.scrollBy(0, _viewportHeight);
-    			}, viewportHeight);
+			// Scroll one viewport at a time, pausing to let content load
+			let viewportIncr = 0;
+
+			while (viewportIncr + viewportHeight <= height) {
+				await page.evaluate(_viewportHeight => {
+					window.scrollBy(0, _viewportHeight);
+				}, viewportHeight);
 				await wait(1000);
-    			viewportIncr = viewportIncr + viewportHeight;
-  			}
+				viewportIncr = viewportIncr + viewportHeight;
+			}
 
-  			// Scroll back to top
-  				await page.evaluate(_ => {
-    			window.scrollTo(0, 0);
-  			});
-		
+			// Scroll back to top
+			await page.evaluate(_ => {
+				window.scrollTo(0, 0);
+			});
 
 			// Wait for a specific period before capture
 			await new Promise((resolve, reject) => {
-				setTimeout(resolve, (parseInt(waitTime) * 10000));
+				setTimeout(resolve, (parseInt(waitTime) * 1000));
 			});
 
 			await page.screenshot({
@@ -102,14 +100,8 @@ module.exports.screenshot = (body) => {
 }
 
 function getHeight(width) {
-	return new Promise(async (resolve, reject) => {
-		if (width < 500) {
-			resolve(600);
-		} else {
-			resolve(height = Math.round((width * 9) / 16));
-		}
-	});
+	return (width < 500) ? 600 : Math.round((width * 9) / 16);
 }
 function wait (ms) {
 	return new Promise(resolve => setTimeout(() => resolve(), ms));
-  }
+}

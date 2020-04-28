@@ -45,6 +45,7 @@ app.post('/screenshot', async (req,res)=>{
 		res.status(400).send({
 			message: err.message
 		});
+		console.error(err);
 	}
 });
 

@@ -1,14 +1,12 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const dotenv = require('dotenv');
+dotenv.config();
 // const logger = require('./log')
 const s3 = new AWS.S3({
 	    accessKeyId: process.env.AWS_ACCESS_KEY, //required
 	    secretAccessKey: process.env.AWS_SECRET_KEY //required
        });
-       
-dotenv.config();
-
 
 module.exports.uploadImage = (file,path) => {
 	return new Promise((resolve,reject)=>{
