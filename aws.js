@@ -14,6 +14,10 @@ module.exports.uploadImage = (file,path) => {
 			if (err) throw err; // Something went wrong!
 				var fileName = file.substring(5);
 				var params = {
+					CreateBucketConfiguration: {
+						// Set your region here
+						LocationConstraint: process.env.S3_REGION
+					},
 					Bucket:process.env.BUCKET,
 					Key: path + fileName, //file.name doesn't exist as a property
 					Body: data,

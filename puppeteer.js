@@ -14,10 +14,12 @@ module.exports.screenshot = (body) => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			let browser = await puppeteer.launch({
+				timeout: 300000,
 				defaultViewport: {
 					width: viewportWidth,
 					height: viewportHeight
-				}
+				},
+				headless: false
 			});
 			let page = await browser.newPage();
 			if (isAuthenticated) {
