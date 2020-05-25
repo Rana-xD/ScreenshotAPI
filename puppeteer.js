@@ -18,8 +18,7 @@ module.exports.screenshot = (body) => {
 				defaultViewport: {
 					width: viewportWidth,
 					height: viewportHeight
-				},
-				headless: false
+				}
 			});
 			let page = await browser.newPage();
 			if (isAuthenticated) {
