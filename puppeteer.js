@@ -14,6 +14,15 @@ module.exports.screenshot = (body) => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			let browser = await puppeteer.launch({
+				args: [
+					'--disable-gpu',
+					'--disable-dev-shm-usage',
+					'--disable-setuid-sandbox',
+					'--no-first-run',
+					'--no-sandbox',
+					'--no-zygote',
+					'--single-process',
+				],
 				timeout: 300000,
 				defaultViewport: {
 					width: viewportWidth,
@@ -71,7 +80,7 @@ module.exports.screenshot = (body) => {
 				await page.evaluate(_viewportHeight => {
 					window.scrollBy(0, _viewportHeight);
 				}, viewportHeight);
-				await wait(1000);
+				await wait(500);
 				viewportIncr = viewportIncr + viewportHeight;
 			}
 
