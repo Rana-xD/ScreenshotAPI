@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-firefox');
 const randomstring = require('randomstring');
+fs = require('fs');
 // const logger = require('./log')
 
 module.exports.screenshot = (body) => {
@@ -12,17 +13,12 @@ module.exports.screenshot = (body) => {
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
 	// logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
+		let rawData = fs.readFileSync('browserWSEndpoint.json');
+		let data = JSON.parse(rawData);
 		try {
-			let browser = await puppeteer.launch({
-				args: [
-					'--disable-gpu',
-					'--disable-dev-shm-usage',
-					'--disable-setuid-sandbox',
-					'--no-first-run',
-					'--no-sandbox',
-					'--no-zygote',
-					'--single-process',
-				],
+			
+			let browser = await puppeteer.connect({
+				browserWSEndpoint: data.browserWSEndpoint,
 				timeout: 300000,
 				defaultViewport: {
 					width: viewportWidth,
@@ -100,7 +96,7 @@ module.exports.screenshot = (body) => {
 			});
 
 			await page.close();
-			await browser.close();
+			await browser.disconnect();
 			resolve(fileName);
 		} catch (e) {
 			// logger.log.error(e);
