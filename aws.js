@@ -1,6 +1,8 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const dotenv = require('dotenv');
+const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
+
 dotenv.config();
 // const logger = require('./log')
 const s3 = new AWS.S3({
@@ -21,7 +23,7 @@ module.exports.uploadImage = (file,path) => {
 					Bucket:process.env.BUCKET,
 					Key: path + fileName, //file.name doesn't exist as a property
 					Body: data,
-					ACL: 'public-read',
+					ACL: 'private',
 					ContentType: 'image/png'
 				};
 				s3.upload(params, function (err, data) {
@@ -36,7 +38,8 @@ module.exports.uploadImage = (file,path) => {
 							reject(err);
 						}
 					// logger.log.info(`Path: ${data.Location}`);
-					resolve(data.Location);
+					let url = `${CLOUDFRONT_URL}${path + fileName}`
+					resolve(url);
 				});
 						
 				}
