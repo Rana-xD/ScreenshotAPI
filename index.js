@@ -24,6 +24,13 @@ app.use(bodyParser.urlencoded({
 app.use(limiter);
 
 
+
+app.get('/',(req,res)=>{
+    res.status(200).send({
+        message: "It's ready"
+    });
+});
+
 app.get('/screenshot',(req,res)=>{
     res.status(200).send({
         message: "It's ready"
