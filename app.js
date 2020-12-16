@@ -8,7 +8,7 @@ dotenv.config();
 
 
 const ips = ['160.86.236.137/32','18.180.24.82/32','3.115.214.232/32','18.138.255.31/32'];
-app.use(ipfilter(ips, { mode: 'allow' }));
+// app.use(ipfilter(ips, { mode: 'allow' }));
 
 if (app.get('env') === 'development') {
 	app.use((err, req, res, _next) => {
