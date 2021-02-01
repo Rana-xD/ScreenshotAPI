@@ -1,6 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const ipfilter = require('express-ipfilter').IpFilter
+// const ipfilter = require('express-ipfilter').IpFilter
 const IpDeniedError = require('express-ipfilter').IpDeniedError
 const app = express();
 dotenv.config();

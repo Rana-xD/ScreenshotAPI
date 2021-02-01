@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer-firefox');
-fs = require('fs');
+const fs = require('fs');
 
 const launchBrowser = async() => {
     try {

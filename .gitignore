@@ -59,5 +59,8 @@ typings/
 
 # next.js build output
 .next
-ecosystem.config.js
+# ecosystem.config.js
 browserWSEndpoint.json
+
+# history extension in VSC
+.history/
