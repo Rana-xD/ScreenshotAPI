@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer-firefox');
 const randomstring = require('randomstring');
-fs = require('fs');
+const fs = require('fs');
 // const logger = require('./log')
 
 module.exports.screenshot = (body) => {
@@ -14,7 +14,7 @@ module.exports.screenshot = (body) => {
 	// logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
 		let rawData = fs.readFileSync('browserWSEndpoint.json');
-		let data = JSON.parse(rawData);
+		// let data = JSON.parse(rawData);
 		try {
 			
 			let browser = await puppeteer.launch({
@@ -75,7 +75,7 @@ module.exports.screenshot = (body) => {
 			});
 
 			const bodyHandle = await page.$('body');
-			const { width, height } = await bodyHandle.boundingBox();
+			const { height } = await bodyHandle.boundingBox();
 
 			// Scroll one viewport at a time, pausing to let content load
 			let viewportIncr = 0;
