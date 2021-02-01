@@ -17,8 +17,16 @@ module.exports.screenshot = (body) => {
 		let data = JSON.parse(rawData);
 		try {
 			
-			let browser = await puppeteer.connect({
-				browserWSEndpoint: data.browserWSEndpoint,
+			let browser = await puppeteer.launch({
+				args: [
+					'--disable-gpu',
+					'--disable-dev-shm-usage',
+					'--disable-setuid-sandbox',
+					'--no-first-run',
+					'--no-sandbox',
+					'--no-zygote',
+					'--single-process',
+				],
 				timeout: 300000,
 				defaultViewport: {
 					width: viewportWidth,
@@ -96,7 +104,7 @@ module.exports.screenshot = (body) => {
 			});
 
 			await page.close();
-			await browser.disconnect();
+			await browser.close();
 			resolve(fileName);
 		} catch (e) {
 			// logger.log.error(e);
