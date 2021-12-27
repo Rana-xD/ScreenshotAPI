@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer-firefox');
+const puppeteer = require('puppeteer');
 const randomstring = require('randomstring');
 const fs = require('fs');
 // const logger = require('./log')

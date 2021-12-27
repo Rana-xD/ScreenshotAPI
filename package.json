@@ -17,17 +17,18 @@
   },
   "homepage": "https://github.com/Rana-xD/ScreenshotAPI#readme",
   "dependencies": {
-    "aws-sdk": "^2.392.0",
+    "aws-sdk": "^2.1042.0",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
-    "express-ipfilter": "^1.1.2",
+    "express-ipfilter": "^1.2.0",
     "express-rate-limit": "^3.3.2",
+    "puppeteer": "^13.0.1",
     "puppeteer-core": "^1.9.0",
     "puppeteer-firefox": "^0.5.1",
-    "randomstring": "^1.1.5",
+    "randomstring": "^1.2.1",
     "simple-node-logger": "^18.12.24"
   },
   "devDependencies": {
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.15"
   }
 }
