@@ -2,12 +2,16 @@ const app = require('./app');
 const aws = require('./aws');
 const puppeteer = require('./puppeteer');
 const bodyParser = require("body-parser");
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit')
 
 
 const limiter = rateLimit({
-	windowMs: 1 * 60 * 1000, // 1 minutes
-	max: 50 // limit each IP to 50 requests per windowMs
+	windowMs: 5 * 60 * 1000, // 5 minute
+	max: 50, // Limit each IP to 10 create account requests per `window` (here, per hour)
+	message:
+		'Too many requests, please try again after 5 minute',
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
 /**bodyParser.json(options)

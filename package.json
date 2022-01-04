@@ -21,7 +21,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-ipfilter": "^1.2.0",
-    "express-rate-limit": "^3.3.2",
+    "express-rate-limit": "^3.5.3",
     "puppeteer": "^13.0.1",
     "puppeteer-core": "^1.9.0",
     "puppeteer-firefox": "^0.5.1",
