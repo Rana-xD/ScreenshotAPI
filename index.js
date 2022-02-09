@@ -41,10 +41,13 @@ app.post('/screenshot', async (req,res)=>{
 		let path = req.body.path;
 		let fileName = await puppeteer.screenshot(req.body);
 		let location = await aws.uploadImage(fileName,path);
+		let size = await aws.getSize(path+fileName.substring(5));
 		res.status(200).send({
 			url: req.body.url,
 			witdh: req.body.width,
-			location: location
+			location: location,
+			fileName: fileName.substring(5),
+			size: size
 		});
    } catch(err) {
 		res.status(400).send({

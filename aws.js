@@ -47,3 +47,16 @@ module.exports.uploadImage = (file,path) => {
 		});
 	});
 }
+
+module.exports.getSize = (key) => {
+	return new Promise((resolve,reject)=>{
+		let bucket = process.env.BUCKET;
+		s3.headObject({ Key: key, Bucket: bucket },function (err, data){
+			if(err){
+				reject(err);
+			}
+			resolve(data.ContentLength)
+		});
+	});
+}
+
