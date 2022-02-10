@@ -38,17 +38,16 @@ app.get('/screenshot',(req,res)=>{
 
 app.post('/screenshot', async (req,res)=>{
    try{
-		let path = req.body.path;
 		let fileName = await puppeteer.screenshot(req.body);
-		let location = await aws.uploadImage(fileName,path);
-		let size = await aws.getSize(path+fileName.substring(5));
-		res.status(200).send({
-			url: req.body.url,
-			witdh: req.body.width,
-			location: location,
-			fileName: fileName.substring(5),
-			size: size
-		});
+		let fileBase64 = aws.getBase64File(fileName);
+		let result = await aws.deleteImage(fileName);
+		if(result){
+			res.status(200).send({
+				url: req.body.url,
+				witdh: req.body.width,
+				file_base64: fileBase64
+			});
+		}
    } catch(err) {
 		res.status(400).send({
 			message: err.message
