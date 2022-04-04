@@ -13,7 +13,7 @@ module.exports.screenshot = (body) => {
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
 	// logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
-		let rawData = fs.readFileSync('browserWSEndpoint.json');
+		// let rawData = fs.readFileSync('browserWSEndpoint.json');
 		// let data = JSON.parse(rawData);
 		try {
 			
