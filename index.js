@@ -1,5 +1,5 @@
 const app = require('./app');
-const aws = require('./aws');
+const storage = require('./storage');
 const puppeteer = require('./puppeteer');
 const bodyParser = require("body-parser");
 const rateLimit = require('express-rate-limit')
@@ -36,22 +36,32 @@ app.get('/screenshot',(req,res)=>{
 	});
 });
 
-app.post('/screenshot', async (req,res)=>{
-   try{
-		let fileName = await puppeteer.screenshot(req.body);
-		let fileBase64 = aws.getBase64File(fileName);
-		let result = await aws.deleteImage(fileName);
-		if(result){
-			res.status(200).send({
-				url: req.body.url,
-				witdh: req.body.width,
-				file_base64: fileBase64
-			});
-		}
-   } catch(err) {
+app.post('/screenshot', async (req,res,next)=>{
+	let fileName;
+
+	try{
+		fileName = await puppeteer.screenshot(req.body);
+		res.sendFile(
+			fileName,
+			{
+				root: __dirname
+			},
+			async (err) => {
+				if (err) {
+					next(err);
+				}
+
+				await storage.deleteFile(fileName);
+			}
+		);
+	} catch(err) {
 		res.status(400).send({
 			message: err.message
 		});
+
+		if (fileName) {
+			await storage.deleteFile(fileName);
+		}
 	}
 });
 

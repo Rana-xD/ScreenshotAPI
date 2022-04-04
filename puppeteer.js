@@ -1,20 +1,17 @@
 const puppeteer = require('puppeteer');
 const randomstring = require('randomstring');
-const fs = require('fs');
 // const logger = require('./log')
 
 module.exports.screenshot = (body) => {
 	let url = body.url;
 	let viewportWidth = body.width;
 	let viewportHeight = body.height || getHeight(viewportWidth);
-	let isAuthenticated = body.authentication ? true : false;
-	let hasLoginPage = body.login_bypass ? true : false;
-	let waitTime = body.wait_time || 1;
+	let isAuthenticated = !!body.basicAuth;
+	let hasLoginPage = !!body.auth;
+	let waitTime = body.captureDelay || 1;
 	let fileName = body.fileName || `${randomstring.generate({charset: 'hex'})}.png`;
 	// logger.log.info(`URL: ${url} and Width: ${width} and isAuthenticated: ${isAuthenticated}`);
 	return new Promise(async (resolve, reject) => {
-		// let rawData = fs.readFileSync('browserWSEndpoint.json');
-		// let data = JSON.parse(rawData);
 		try {
 			
 			let browser = await puppeteer.launch({
@@ -37,7 +34,7 @@ module.exports.screenshot = (body) => {
 			if (isAuthenticated) {
 				// Firefox specific for Basic Authentication
 				// Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
-				const encodedCredential = Buffer.from(`${body.authentication.username}:${body.authentication.password}`)
+				const encodedCredential = Buffer.from(`${body.basicAuth.username}:${body.basicAuth.password}`)
 																				.toString('base64');
 				await page.setExtraHTTPHeaders({
 					Authorization: `Basic ${encodedCredential}`
@@ -46,12 +43,12 @@ module.exports.screenshot = (body) => {
 
 			// Bypass login form
 			if (hasLoginPage) {
-				let loginPageUrl = body.login_bypass.login_page_url.trim(),
-					loginId = body.login_bypass.login_id_value.trim(),
-					loginPassword = body.login_bypass.login_pass_value,
-					idClassname = body.login_bypass.login_id_classname.trim().replace(/\s\s+/g, ' '),
-					passClassname = body.login_bypass.login_pass_classname.trim().replace(/\s\s+/g, ' '),
-					loginBtn = body.login_bypass.login_btn_classname.trim().replace(/\s\s+/g, ' ');
+				let loginPageUrl = body.auth.url.trim(),
+					loginId = body.auth.username.trim(),
+					loginPassword = body.auth.password,
+					idClassname = body.auth.usernameSelector.trim().replace(/\s\s+/g, ' '),
+					passClassname = body.auth.passwordSelector.trim().replace(/\s\s+/g, ' '),
+					loginBtn = body.auth.submitSelector.trim().replace(/\s\s+/g, ' ');
 
 				await page.goto(loginPageUrl, {
 					timeout: 0
@@ -77,10 +74,14 @@ module.exports.screenshot = (body) => {
 			const bodyHandle = await page.$('body');
 			const { height } = await bodyHandle.boundingBox();
 
+			const scrollHeight = await page.evaluate(() => document.body.scrollHeight);
+
+			let siteHeight = (height > scrollHeight) ? height : scrollHeight;
+
 			// Scroll one viewport at a time, pausing to let content load
 			let viewportIncr = 0;
 
-			while (viewportIncr + viewportHeight <= height) {
+			while (viewportIncr + viewportHeight <= siteHeight) {
 				await page.evaluate(_viewportHeight => {
 					window.scrollBy(0, _viewportHeight);
 				}, viewportHeight);
@@ -88,6 +89,22 @@ module.exports.screenshot = (body) => {
 				viewportIncr = viewportIncr + viewportHeight;
 			}
 
+			await page.addStyleTag({
+				content: `
+					*,
+					*::after,
+					*::before {
+						transition-delay: 0s !important;
+						transition-duration: 0s !important;
+						animation-delay: -0.0001s !important;
+						animation-duration: 0s !important;
+						animation-play-state: paused !important;
+						caret-color: transparent !important;
+						color-adjust: exact !important;
+					}
+				`,
+			});
+			
 			// Scroll back to top
 			await page.evaluate(_ => {
 				window.scrollTo(0, 0);

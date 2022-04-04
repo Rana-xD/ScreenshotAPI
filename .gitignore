@@ -64,3 +64,6 @@ browserWSEndpoint.json
 
 # history extension in VSC
 .history/
+# IDE
+.idea
+ 
